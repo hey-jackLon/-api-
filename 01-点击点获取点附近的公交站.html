@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <script type="text/javascript"
+        src="http://webapi.amap.com/maps?v=1.4.9&key=d0d93af43e061d0492854bc7a0454e96"></script>
+
+</head>
+
+<body>
+    <div id="wrap" style="height: 800px;width:1000px;">
+        <div id="mapContainer" style="height: 100%;width: 100%;"></div>
+        <div id="buttonWrap">
+            <button onclick="editCircle()">编辑范围</button>
+            <button onclick="endeditCircle()">结束编辑</button>
+        </div>
+
+    </div>
+
+</body>
+<script>
+    var stations = [{ "name": "海棠广场南", "station_id": 1, "up_down": 0, "up_down_name": "上行", "x": 103.76123333333334, "y": 29.557646666666667 }, { "name": "土桥街", "station_id": 2, "up_down": 0, "up_down_name": "上行", "x": 103.76372333333333, "y": 29.557566666666666 }, { "name": "高北门", "station_id": 3, "up_down": 0, "up_down_name": "上行", "x": 103.76524333333333, "y": 29.561276666666668 }, { "name": "大曲口", "station_id": 4, "up_down": 0, "up_down_name": "上行", "x": 103.76663333333333, "y": 29.565926666666666 }, { "name": "泌水院", "station_id": 5, "up_down": 0, "up_down_name": "上行", "x": 103.76655333333333, "y": 29.568856666666665 }, { "name": "下观音", "station_id": 6, "up_down": 0, "up_down_name": "上行", "x": 103.76464333333334, "y": 29.573496666666667 }, { "name": "石雁儿", "station_id": 7, "up_down": 0, "up_down_name": "上行", "x": 103.76338333333334, "y": 29.575746666666667 }, { "name": "北门桥", "station_id": 8, "up_down": 0, "up_down_name": "上行", "x": 103.76262333333334, "y": 29.579926666666665 }, { "name": "市审计局", "station_id": 9, "up_down": 0, "up_down_name": "上行", "x": 103.76327333333333, "y": 29.584366666666668 }, { "name": "杨家花园", "station_id": 10, "up_down": 0, "up_down_name": "上行", "x": 103.76371333333333, "y": 29.590186666666668 }, { "name": "高墩子", "station_id": 11, "up_down": 0, "up_down_name": "上行", "x": 103.75714333333333, "y": 29.598486666666666 }, { "name": "联运站东", "station_id": 12, "up_down": 0, "up_down_name": "上行", "x": 103.75480333333333, "y": 29.600806666666667 }, { "name": "市司法局", "station_id": 13, "up_down": 0, "up_down_name": "上行", "x": 103.75010333333333, "y": 29.602566666666668 }, { "name": "龙游路通江路口", "station_id": 14, "up_down": 0, "up_down_name": "上行", "x": 103.74706333333333, "y": 29.604326666666665 }, { "name": "龙游路白燕路口", "station_id": 15, "up_down": 0, "up_down_name": "上行", "x": 103.74202333333334, "y": 29.608616666666666 }, { "name": "王河园", "station_id": 16, "up_down": 0, "up_down_name": "上行", "x": 103.73888333333333, "y": 29.611256666666666 }, { "name": "龙游路鹤翔路口", "station_id": 17, "up_down": 0, "up_down_name": "上行", "x": 103.73384333333334, "y": 29.614876666666667 }, { "name": "旧车交易市场", "station_id": 18, "up_down": 0, "up_down_name": "上行", "x": 103.72801333333334, "y": 29.618306666666665 }, { "name": "高坝村", "station_id": 19, "up_down": 0, "up_down_name": "上行", "x": 103.72505333333334, "y": 29.618736666666667 }, { "name": "范山口", "station_id": 20, "up_down": 0, "up_down_name": "上行", "x": 103.72073333333333, "y": 29.619056666666665 }, { "name": "西南农产品批发市场", "station_id": 21, "up_down": 0, "up_down_name": "上行", "x": 103.71522333333333, "y": 29.618196666666666 }, { "name": "金鹰山庄", "station_id": 22, "up_down": 0, "up_down_name": "上行", "x": 103.70868333333334, "y": 29.617586666666668 }, { "name": "天工开物", "station_id": 23, "up_down": 0, "up_down_name": "上行", "x": 103.70257333333333, "y": 29.619526666666665 }, { "name": "石垇子", "station_id": 24, "up_down": 0, "up_down_name": "上行", "x": 103.69599333333333, "y": 29.619706666666666 }, { "name": "棉竹老街口", "station_id": 25, "up_down": 0, "up_down_name": "上行", "x": 103.69256333333334, "y": 29.623236666666667 }, { "name": "棉竹新街口", "station_id": 26, "up_down": 0, "up_down_name": "上行", "x": 103.69006333333333, "y": 29.628706666666666 }, { "name": "棉竹文体中心", "station_id": 27, "up_down": 0, "up_down_name": "上行", "x": 103.68889333333334, "y": 29.634236666666666 }]
+    var gCircle = null,
+        gMarker = null,
+        circleEditor = null;
+    var map = new AMap.Map('mapContainer', {
+        zoom: 11,//级别
+        center: [103.761263, 29.582024],//中心点坐标
+        zoom: 9,
+        mapStyle: "amap://styles/98b70c148d3711c97abe884acb2aacde"
+    });
+
+    map.on('click', function (e) {
+        map.clearMap()
+        gCircle = addCircle(e.lnglat.getLng(), e.lnglat.getLat())
+        // gMarker = addMarker(e.lnglat.getLng(), e.lnglat.getLat())
+        map.add([gCircle])
+        //map.add(gMarker)
+        map.setFitView();
+        console.log(isInCircle(gCircle, stations))
+    });
+
+    function editCircle() {
+        if (gCircle) {
+            map.plugin(["AMap.CircleEditor"], function () {
+                circleEditor = new AMap.CircleEditor(map, gCircle);
+                circleEditor.open();
+            });
+        }
+    }
+    function endeditCircle() {
+        if (circleEditor) {
+            circleEditor.close()
+            console.log(isInCircle(gCircle, stations))
+        }
+    }
+    function addCircle(lng, lat) {
+        var circle = new AMap.Circle({
+            center: new AMap.LngLat(lng, lat),  // 圆心位置
+            radius: 500, // 圆半径
+            fillColor: 'red',   // 圆形填充颜色
+            fillOpacity: 0.5,
+            strokeColor: '#fff', // 描边颜色
+            strokeWeight: 2, // 描边宽度
+        });
+        return circle
+    }
+
+    function addMarker(lng, lat) {
+        var marker = new AMap.Marker({
+            position: new AMap.LngLat(lng, lat),   // 经纬度对象，也可以是经纬度构成的一维数组[116.39, 39.9]
+        });
+        return marker
+    }
+
+    function isInCircle(ciecleObj, stations) {
+        var incircle = []
+        for (let i = 0; i < stations.length; i++) {
+            var point = new AMap.LngLat(stations[i].x, stations[i].y)
+            var isPointInRing = ciecleObj.contains(point)
+            if (isPointInRing) {
+                incircle.push(stations[i])
+            }
+        }
+        return incircle
+    }
+
+</script>
+
+</html>

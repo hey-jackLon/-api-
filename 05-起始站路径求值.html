@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <script type="text/javascript"
+        src="http://webapi.amap.com/maps?v=1.4.9&key=d0d93af43e061d0492854bc7a0454e96"></script>
+    <script src="https://cdn.bootcdn.net/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+    <style>
+        * {
+            margin: 0;
+        }
+
+        html,
+        body {
+            height: 100%;
+            width: 100%;
+        }
+    </style>
+</head>
+
+<body>
+    <div id="mapContainer" style="height: 100%;width: 100%;"></div>
+</body>
+<script>
+    var map = new AMap.Map('mapContainer', {
+        zoom: 11,//级别
+        center: [103.761263, 29.582024],//中心点坐标
+        zoom: 9,
+        mapStyle: "amap://styles/98b70c148d3711c97abe884acb2aacde"
+    });
+    const get_point_instance = (obj)=>{
+        let start = new AMap.LngLat(obj.START_X,obj.START_Y)
+        let end = new AMap.LngLat(obj.END_X,obj.END_Y)
+        //debugger
+        return INSTANCE = Math.round(start.distance(end));
+    }
+    const get_line_data = ()=>{
+        $.get('http://127.0.0.1:8887/line_data.json',function(result){
+            for(let i = 0;i < result.length;i++ ){
+                result[i].INSTANCE = get_point_instance(result[i])
+            }
+            console.log(JSON.stringify(result))
+           //debugger
+        },'json')
+    }
+    get_line_data()
+</script>
+
+</html>
