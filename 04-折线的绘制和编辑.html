@@ -1,144 +1,171 @@
 <!doctype html>
 <html>
+
 <head>
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="initial-scale=1.0, user-scalable=no, width=device-width">
     <style>
-    html,
-    body,
-    #container {
-      width: 100%;
-      height: 100%;
-    }
+        html,
+        body,
+        #container {
+            width: 100%;
+            height: 100%;
+        }
     </style>
     <title>折线的绘制和编辑</title>
     <link rel="stylesheet" href="https://a.amap.com/jsapi_demos/static/demo-center/css/demo-center.css" />
-    <script src="https://webapi.amap.com/maps?v=1.4.15&key=a190c46894f962d3e98541de111b7baf&plugin=AMap.PolyEditor"></script>
+    <script
+        src="https://webapi.amap.com/maps?v=1.4.15&key=a190c46894f962d3e98541de111b7baf&plugin=AMap.PolyEditor"></script>
     <script src="https://a.amap.com/jsapi_demos/static/demo-center/js/demoutils.js"></script>
     <script src="https://cdn.bootcdn.net/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
 </head>
+
 <body>
-<div id="container"></div>
-<div class="input-card" style="width: 120px">
-   <button class="btn" onclick="polyEditor.open()" style="margin-bottom: 5px">开始编辑</button> 
-   <button class="btn" onclick="polyEditor.close()">结束编辑</button> 
-</div>
-<script type="text/javascript">
-    var map = new AMap.Map("container", {
-        center: [116.395577, 39.892257],
-        zoom: 14
-    });
+    <div id="container"></div>
+    <div class="input-card" style="width: 120px">
+        <button class="btn" onclick="polyEditor.open()" style="margin-bottom: 5px">开始编辑</button>
+        <button class="btn" onclick="polyEditor.close()">结束编辑</button>
+    </div>
+    <script type="text/javascript">
+        var map = new AMap.Map("container", {
+            center: [116.395577, 39.892257],
+            zoom: 14
+        });
 
-    var path = [
-        [116.362209, 39.887487],
-        [116.422897, 39.878002],
-        [116.372105, 39.90651],
-        [116.428945, 39.89663]
-    ];
+        var path = [
+            [116.362209, 39.887487],
+            [116.422897, 39.878002],
+            [116.372105, 39.90651],
+            [116.428945, 39.89663]
+        ];
 
-    var path_data = [
-        {
-            x:116.362209,
-            y:39.887487,
-            name:"test1"
-        },
-        {
-            x:116.422897,
-            y:39.878002,
-            name:"test2"
-        },
-        {
-            x:116.372105,
-            y:39.90651,
-            name:"test3"
-        },
-        {
-            x:116.428945,
-            y:39.89663,
-            name:"test4"
-        },
-    ]
-    
-    var polyline = new AMap.Polyline({
-        path: path,
-        isOutline: true,
-        outlineColor: '#ffeeff',
-        borderWeight: 3,
-        strokeColor: "#3366FF", 
-        strokeOpacity: 1,
-        strokeWeight: 6,
-        // 折线样式还支持 'dashed'
-        strokeStyle: "solid",
-        // strokeStyle是dashed时有效
-        strokeDasharray: [10, 5],
-        lineJoin: 'round',
-        lineCap: 'round',
-        zIndex: 50,
-        extData:path_data,
-    })
-
-    polyline.setMap(map)
-    // 缩放地图到合适的视野级别
-    map.setFitView([ polyline ])
-
-    var polyEditor = new AMap.PolyEditor(map, polyline)
-
-    polyEditor.on('addnode', function(event) {
-        log.info('触发事件：addnode')
-        let index = event.target.Ce.path.findIndex((item)=>{
-            return Object.is(item,event.lnglat)
+        let ext_data_index = null;
+        var path_data = [
+            {
+                x: 116.362209,
+                y: 39.887487,
+                name: "测试1"
+            },
+            {
+                x: 116.422897,
+                y: 39.878002,
+                name: "测试2"
+            },
+            {
+                x: 116.372105,
+                y: 39.90651,
+                name: "测试3"
+            },
+            {
+                x: 116.428945,
+                y: 39.89663,
+                name: "测试4"
+            },
+        ]
+        var polyline = new AMap.Polyline({
+            path: path,
+            isOutline: true,
+            outlineColor: '#ffeeff',
+            borderWeight: 3,
+            strokeColor: "#3366FF",
+            strokeOpacity: 1,
+            strokeWeight: 6,
+            // 折线样式还支持 'dashed'
+            strokeStyle: "solid",
+            // strokeStyle是dashed时有效
+            strokeDasharray: [10, 5],
+            lineJoin: 'round',
+            lineCap: 'round',
+            zIndex: 50,
+            extData: path_data,
         })
-        let getExtData = polyline.getExtData()
-        getExtData.splice(index,0,event.lnglat)
-        polyline.setExtData(getExtData)
-        console.log(JSON.stringify(polyline.getExtData()))
-    })
 
-    polyEditor.on('adjust', function(event) {
-        log.info('触发事件：adjust')
-        
-        let index = event.target.Ce.path.findIndex((item)=>{
-            return Object.is(item,event.lnglat)
+        polyline.setMap(map)
+        // 缩放地图到合适的视野级别
+        map.setFitView([polyline])
+        var line_path_data = [].concat(polyline.getPath())
+        //debugger
+        var polyEditor = new AMap.PolyEditor(map, polyline)
+
+        polyEditor.on('addnode', function (event) {
+            log.info('触发事件：addnode')
+            let index = event.target.Ce.path.findIndex((item) => {
+                return Object.is(item, event.lnglat)
+            })
+            line_path_data.splice(index,0,event.lnglat)
+            ext_data_index = index
+            let getExtData = polyline.getExtData()
+            getExtData.splice(index, 0, {})
+            polyline.setExtData(getExtData)
         })
-        let getExtData = polyline.getExtData()
-        // getExtData.splice(index,0,event.lnglat)
-        getExtData[index] = event.lnglat
-        
-        polyline.setExtData(getExtData)
-        console.log(polyline.getExtData())
-        console.log(JSON.stringify(polyline.getExtData()))
-    })
 
-    polyEditor.on('removenode', function(event) {
-        log.info('触发事件：removenode')
-    })
+        polyEditor.on('adjust', function (event) {
+            log.info('触发事件：adjust')
 
-    polyEditor.on('end', function(event) {
-        log.info('触发事件： end')
-        console.log(event.target.Ce.path)
-        // event.target 即为编辑后的折线对象
-    })
-
-    const draw_marker = (obj)=>{
-        let marker = new AMap.Marker({
-            map:map,
-            position:new AMap.LngLat(obj.lng,obj.lat),
-            extData:obj
+            let index = event.target.Ce.path.findIndex((item) => {
+                return Object.is(item, event.lnglat)
+            })
+            line_path_data[index] = event.lnglat;
+            ext_data_index = index;
         })
-        marker.on('mouseover',function(res){
-            debugger
-        })
-    }
 
-    const get_line_data = ()=>{
-        $.get('http://127.0.0.1:8887/station.json',function(result){
-            for(let i = 0;i < result.length;i++ ){
-                draw_marker(result[i])
+        polyEditor.on('removenode', function (event) {
+            
+            let index = line_path_data.findIndex((item) => {
+                return Object.is(item, event.lnglat)
+            })
+            line_path_data.splice(index,1)
+            let getExtData = polyline.getExtData()
+            getExtData.splice(index, 1)
+            polyline.setExtData(getExtData)
+        })
+
+        polyEditor.on('end', function (event) {
+            log.info('触发事件： end')
+            console.log(event.target.Ce.path)
+            // event.target 即为编辑后的折线对象
+        })
+
+        const draw_marker = (obj) => {
+            let marker = new AMap.Circle({
+                map: map,
+                center: new AMap.LngLat(obj.lng, obj.lat),
+                radius: 20,
+                extData: obj
+            })
+            marker.on('mouseover', marker_mouseover)
+        }
+
+        const marker_mouseover = (e) => {
+            if (!polyline) return;
+            let is_point_on_line = AMap.GeometryUtil.isPointOnLine(e.lnglat, polyline.getPath(), 10);
+            if (is_point_on_line) {
+                if (ext_data_index) {
+                    let marker_ext_data = e.target.getExtData();
+                    let polyline_ext_data = polyline.getExtData();
+                    let index = polyline_ext_data.findIndex((item) => {
+                        return Object.is(item, marker_ext_data)
+                    })
+                    if (index === (-1)) {
+                        polyline_ext_data[ext_data_index] = marker_ext_data;
+                        polyline.setExtData(polyline_ext_data);
+                        ext_data_index = null;
+                    }
+                }
             }
-        },'json')
-    }
-    get_line_data()
-</script>
+            console.log(polyline.getExtData())
+        }
+
+        const get_line_data = () => {
+            $.get('http://127.0.0.1:8887/station.json', function (result) {
+                for (let i = 0; i < result.length; i++) {
+                    draw_marker(result[i])
+                }
+            }, 'json')
+        }
+        get_line_data()
+    </script>
 </body>
+
 </html>
